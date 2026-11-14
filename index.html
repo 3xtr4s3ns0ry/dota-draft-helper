@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dota 2 Draft Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="introScreen" class="intro-screen">
+    <div class="intro-content">
+      <img src="welcome.png" alt="Welcome" class="intro-img" />
+      <div class="intro-text-wrap">
+        <h1 class="intro-title">DOTA 2 <span class="accent">DRAFT HELPER</span></h1>
+        <p class="intro-sub">Умный подбор контр-пиков</p>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="logo"><span class="logo-icon">⚔</span><h1>DOTA 2 <span class="accent">DRAFT HELPER</span></h1></div>
+    <p class="subtitle">Контр-пики и синергии на этапе пиков</p>
+  </header>
+
+  <main>
+    <section class="draft-panel glass">
+      <div class="mode-switch">
+        <button class="mode-btn active" data-team="enemy"><span class="mode-icon">🎯</span> ВРАГИ</button>
+        <button class="mode-btn" data-team="ally"><span class="mode-icon">🛡</span> СОЮЗНИКИ</button>
+      </div>
+      <div class="draft-progress">
+        <div class="seg enemy" data-seg="e0"></div><div class="seg enemy" data-seg="e1"></div><div class="seg enemy" data-seg="e2"></div><div class="seg enemy" data-seg="e3"></div><div class="seg enemy" data-seg="e4"></div>
+        <div class="seg ally" data-seg="a0"></div><div class="seg ally" data-seg="a1"></div><div class="seg ally" data-seg="a2"></div><div class="seg ally" data-seg="a3"></div><div class="seg ally" data-seg="a4"></div>
+      </div>
+      <div class="team enemy-team">
+        <h2><span class="team-label"><span class="dot red"></span>Враги</span><span id="enemyCount" class="counter">0/5</span></h2>
+        <div id="enemySlots" class="slots">
+          <div class="slot" data-index="0"><span class="slot-num">1</span><span class="slot-plus">+</span></div><div class="slot" data-index="1"><span class="slot-num">2</span><span class="slot-plus">+</span></div><div class="slot" data-index="2"><span class="slot-num">3</span><span class="slot-plus">+</span></div><div class="slot" data-index="3"><span class="slot-num">4</span><span class="slot-plus">+</span></div><div class="slot" data-index="4"><span class="slot-num">5</span><span class="slot-plus">+</span></div>
+        </div>
+      </div>
+      <div class="team ally-team">
+        <h2><span class="team-label"><span class="dot green"></span>Союзники</span><span id="allyCount" class="counter">0/5</span></h2>
+        <div id="allySlots" class="slots">
+          <div class="slot" data-index="0"><span class="slot-num">1</span><span class="slot-plus">+</span></div><div class="slot" data-index="1"><span class="slot-num">2</span><span class="slot-plus">+</span></div><div class="slot" data-index="2"><span class="slot-num">3</span><span class="slot-plus">+</span></div><div class="slot" data-index="3"><span class="slot-num">4</span><span class="slot-plus">+</span></div><div class="slot" data-index="4"><span class="slot-num">5</span><span class="slot-plus">+</span></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="clearBtn" class="btn-ghost" style="flex: 1;">Сброс</button>
+        <button id="exportBtn" class="btn-primary" style="flex: 1;" disabled><span class="btn-glow"></span>Скачать</button>
+        <button id="recommendBtn" class="btn-primary" style="flex: 2;" disabled><span class="btn-glow"></span>Рассчитать пики</button>
+      </div>
+    </section>
+
+    <section class="hero-picker glass">
+      <div class="picker-header"><h2>Выбор героя</h2><span id="pickerMode" class="picker-mode">→ во ВРАГИ</span></div>
+      <p class="picker-hint">ЛКМ — выбрать · ПКМ — открыть Dotabuff</p>
+      <div class="search-wrap"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Найти героя..." class="search" /></div>
+      <div class="filters">
+        <div class="filter-group"><label for="roleFilter">Роль</label><select id="roleFilter" class="filter-select"><option value="">Все роли</option></select></div>
+        <div class="filter-group"><label for="attrFilter">Атрибут</label><select id="attrFilter" class="filter-select"><option value="">Все</option><option value="str">💪 Сила</option><option value="agi">🏹 Ловкость</option><option value="int">🧠 Интеллект</option><option value="all">🌈 Универсал</option></select></div>
+      </div>
+      <div id="heroGrid" class="hero-grid"><p class="loading">Загрузка героев...</p></div>
+    </section>
+
+    <section class="recommendations glass">
+      <div class="picker-header"><h2>Рекомендации <span id="recCount" class="counter"></span></h2></div>
+      <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-icon">🏆</div>
+        <h3>Добро пожаловать в Draft Helper</h3>
+        <p>Интеллектуальный помощник для выбора контр-пиков на основе реальной статистики матчей.</p>
+        <div class="welcome-steps">
+          <div class="step"><span class="step-num">1</span><span class="step-text">Выберите врагов и союзников</span></div>
+          <div class="step"><span class="step-num">2</span><span class="step-text">Нажмите «Показать рекомендации»</span></div>
+          <div class="step"><span class="step-num">3</span><span class="step-text">Изучите топ-10 с синергией</span></div>
+        </div>
+      </div>
+      <div id="statsPanel" class="stats-panel" style="display:none;">
+        <div class="stat-box"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Всего</div></div>
+        <div class="stat-box"><div class="stat-val" id="statAvail">0</div><div class="stat-lbl">Доступно</div></div>
+        <div class="stat-box"><div class="stat-val" id="statAvgWr">0%</div><div class="stat-lbl">Ср. винрейт</div></div>
+      </div>
+      <p id="recStatus" class="hint" style="display:none;">Выберите врагов...</p>
+      <div id="recList" class="rec-list"></div>
+    </section>
+  </main>
+
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feature-card glass">
+        <div class="feature-icon">📊</div>
+        <h3>Живая статистика</h3>
+        <p>Винрейты и контр-пики подтягиваются напрямую из базы OpenDota API в реальном времени.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">🧠</div>
+        <h3>Умный алгоритм</h3>
+        <p>Рекомендации строятся на основе винрейта против врагов и синергии с вашими союзниками.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">🖼️</div>
+        <h3>Экспорт драфта</h3>
+        <p>Сохраните свой план на игру в виде красивой PNG-картинки и поделитесь с тиммейтами.</p>
+      </div>
+      <div class="feature-card glass">
+        <div class="feature-icon">🎯</div>
+        <h3>Оценка сложности</h3>
+        <p>Система подскажет, насколько сложно реализовать героя (Легко / Средне / Хард).</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo" style="justify-content: flex-start; margin-bottom: 12px;">
+          <span class="logo-icon" style="font-size: 24px;">⚔</span>
+          <h2 style="font-family: 'Rajdhani', sans-serif; font-size: 24px; margin: 0;">DOTA 2 <span class="accent">DRAFT HELPER</span></h2>
+        </div>
+        <p>Интеллектуальный ассистент для драфта. Анализирует реальную статистику матчей и помогает собрать идеальный состав.</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Источники данных</h4>
+          <a href="https://www.opendota.com/" target="_blank">OpenDota API</a>
+          <a href="https://www.dotabuff.com/" target="_blank">Dotabuff</a>
+          <a href="https://stratz.com/" target="_blank">Stratz</a>
+        </div>
+        <div class="footer-col">
+          <h4>Проект</h4>
+          <a href="#">О сайте</a>
+          <a href="#">Как это работает</a>
+          <a href="#">Обратная связь</a>
+        </div>
+        <div class="footer-col">
+          <h4>Технологии</h4>
+          <a href="#">HTML5 / CSS3</a>
+          <a href="#">Vanilla JavaScript</a>
+          <a href="#">Canvas API</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© 2026 Dota 2 Draft Helper. Учебный проект. Dota 2 является торговой маркой Valve Corporation.</p>
+    </div>
+    
+    <div class="footer-watermark">DOTA 2</div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
