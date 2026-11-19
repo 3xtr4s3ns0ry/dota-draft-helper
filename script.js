@@ -1,7 +1,7 @@
 const API = 'https://api.opendota.com/api';
 const IMG = 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes';
 
-// ====== ЗВУКОВЫЕ ЭФФЕКТЫ (Web Audio API) ======
+// ====== ЗВУКОВЫЕ ЭФФЕКТЫ ======
 let audioCtx = null;
 function playSound(type) {
   try {
@@ -272,10 +272,30 @@ async function exportDraft() {
 
 function renderAll() { renderSlots(); renderHeroGrid(document.getElementById('searchInput').value); }
 function attachPanelGlow() { document.querySelectorAll('.glass').forEach(panel => panel.addEventListener('mousemove', e => { const rect = panel.getBoundingClientRect(); panel.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width) * 100 + '%'); panel.style.setProperty('--my', ((e.clientY - rect.top) / rect.height) * 100 + '%'); })); }
-function handleIntroScreen() { const intro = document.getElementById('introScreen'); if (!intro) return; setTimeout(() => { intro.classList.add('fade-out'); setTimeout(() => intro.style.display = 'none', 800); }, 2500); }
+
+// ====== ИНИЦИАЛИЗАЦИЯ ИНТРО ======
+function handleIntroScreen() { 
+  const intro = document.getElementById('introScreen'); 
+  if (!intro) return; 
+  
+  
+  setTimeout(() => { 
+    intro.classList.add('fade-out'); 
+    setTimeout(() => { 
+      intro.style.display = 'none'; 
+      
+      // Запускаем сайт
+      loadHeroes();
+      renderSlots();
+      attachPanelGlow();
+      
+    }, 800); 
+  }, 3000); 
+}
 
 function init() {
-  loadHeroes(); handleIntroScreen();
+  handleIntroScreen(); // Запуск интро
+  
   document.getElementById('searchInput').addEventListener('input', e => renderHeroGrid(e.target.value));
   document.getElementById('roleFilter').addEventListener('change', e => { state.roleFilter = e.target.value; renderHeroGrid(document.getElementById('searchInput').value); });
   document.getElementById('attrFilter').addEventListener('change', e => { state.attrFilter = e.target.value; renderHeroGrid(document.getElementById('searchInput').value); });
@@ -290,7 +310,6 @@ function init() {
     renderAll();
   });
   document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => { playSound('click'); setMode(btn.dataset.team); }));
-  renderSlots(); attachPanelGlow();
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
